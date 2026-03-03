@@ -5,7 +5,7 @@ messages:
 
 rewards:
   Uncommon:
-    chance: 1
+    chance: 20
     items:
       - "diamond_ore:1"
       - "gold_block:1"
@@ -14,7 +14,7 @@ rewards:
     message: "&eLucky! You got an Uncommon reward!"
     
   Common:
-    chance: 1
+    chance: 15
     items:
       - "diamond_ore:1"
       - "gold_block:1"
@@ -23,7 +23,7 @@ rewards:
     message: "&aYou found a Common reward!"
 
   Epic:
-    chance: 1
+    chance: 10
     items:
       - "diamond_ore:1"
       - "gold_block:1"
@@ -32,7 +32,7 @@ rewards:
     message: "&bEpic reward! Wow!"
 
   Legendary:
-    chance: 100
+    chance: 5
     items:
       - "diamond_ore:1"
       - "gold_block:1"
