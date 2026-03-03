@@ -26,14 +26,14 @@ class Main extends PluginBase implements Listener {
     public function onBlockBreak(BlockBreakEvent $event): void {
         $player = $event->getPlayer();
         $rewards = $this->config->get("rewards", []);
+        $messages = $this->config->get("messages", []);
 
         foreach($rewards as $rewardName => $data){
-
             $chance = (int)($data["chance"] ?? 1);
             if($chance < 1) $chance = 1;
-            if($chance > 50) $chance = 50;
+            if($chance > 1000) $chance = 1000;
 
-            $roll = mt_rand(1, 50);
+            $roll = mt_rand(1, 1000);
             if($roll > $chance) continue; // not won
 
             // --- GIVE ITEMS ---
@@ -46,6 +46,7 @@ class Main extends PluginBase implements Listener {
 
                 $item = StringToItemParser::getInstance()->parse((string)$id);
                 if($item === null){
+                    $player->sendMessage(str_replace("{ITEM}", $id, $messages["invalid_item"] ?? "Invalid item: {ITEM}"));
                     $this->getLogger()->warning("Invalid item ID in MiningRewards config: $id");
                     continue;
                 }
@@ -57,7 +58,6 @@ class Main extends PluginBase implements Listener {
             // --- RUN COMMANDS AS CONSOLE ---
             foreach($data["commands"] ?? [] as $cmd){
                 if(trim($cmd) === "") continue;
-
                 $cmd = str_replace("{PLAYER}", $player->getName(), $cmd);
                 try {
                     $this->getServer()->dispatchCommand($this->getServer()->getConsoleSender(), $cmd);
@@ -66,7 +66,10 @@ class Main extends PluginBase implements Listener {
                 }
             }
 
-            $player->sendMessage(TextFormat::GREEN . "You received reward: " . $rewardName);
+            // --- SEND REWARD MESSAGE ---
+            $rewardMessage = $data["message"] ?? $messages["reward_received"] ?? "You received reward: {REWARD}";
+            $rewardMessage = str_replace("{REWARD}", $rewardName, $rewardMessage);
+            $player->sendMessage($rewardMessage);
         }
     }
 }
