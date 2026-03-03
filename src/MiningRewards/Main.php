@@ -20,7 +20,7 @@ class Main extends PluginBase implements Listener {
         $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
 
-        $this->getLogger()->info(TextFormat::GREEN . "MiningRewards enabled!");
+        $this->getLogger()->info(TextFormat::GREEN . "MiningRewards enabled with 10,000,000 chance system!");
     }
 
     public function onBlockBreak(BlockBreakEvent $event): void {
@@ -32,15 +32,25 @@ class Main extends PluginBase implements Listener {
 
             $chance = (int)($data["chance"] ?? 1);
 
-            // Clamp between 1 and 100000
+            // Clamp between 1 and 10,000,000
             if($chance < 1) $chance = 1;
-            if($chance > 100000) $chance = 100000;
+            if($chance > 10000000) $chance = 10000000;
 
-            // Roll between 1 and 100000
-            $roll = mt_rand(1, 100000);
+            // If chance is 1 → NEVER reward
+            if($chance === 1){
+                continue;
+            }
 
-            if($roll > $chance) {
-                continue; // Player did not win this reward
+            // If chance is 10,000,000 → ALWAYS reward
+            if($chance === 10000000){
+                $rollWin = true;
+            } else {
+                $roll = mt_rand(1, 10000000);
+                $rollWin = $roll <= $chance;
+            }
+
+            if(!$rollWin){
+                continue;
             }
 
             // --- GIVE ITEMS ---
@@ -65,7 +75,7 @@ class Main extends PluginBase implements Listener {
                 $player->getInventory()->addItem($item);
             }
 
-            // --- RUN COMMANDS AS CONSOLE ---
+            // --- RUN COMMANDS ---
             foreach($data["commands"] ?? [] as $cmd){
                 if(trim($cmd) === "") continue;
 
