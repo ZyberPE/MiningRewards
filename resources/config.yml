@@ -1,30 +1,41 @@
-# Chance is 1-50, 50 = always, 1 = very rare
+# Chance is 1-1000, 1000 = always, 1 = extremely rare
+messages:
+  reward_received: "&aYou received reward: {REWARD}!"
+  invalid_item: "&cInvalid item in config: {ITEM}"
+
 rewards:
   Uncommon:
-    chance: 10
+    chance: 1
     items:
-      - "diamond_ore"
-      - "gold_block"
+      - "diamond_ore:1"
+      - "gold_block:1"
     commands:
       - "give {PLAYER} diamond_ore 40"
+    message: "&eLucky! You got an Uncommon reward!"
+    
   Common:
-    chance: 8
+    chance: 1
     items:
-      - "diamond_ore"
-      - "gold_block"
+      - "diamond_ore:1"
+      - "gold_block:1"
     commands:
       - "give {PLAYER} diamond_ore 40"
+    message: "&aYou found a Common reward!"
+
   Epic:
-    chance: 5
+    chance: 1
     items:
-      - "diamond_ore"
-      - "gold_block"
+      - "diamond_ore:1"
+      - "gold_block:1"
     commands:
       - "give {PLAYER} diamond_ore 40"
+    message: "&bEpic reward! Wow!"
+
   Legendary:
-    chance: 2
+    chance: 100
     items:
-      - "diamond_ore"
-      - "gold_block"
+      - "diamond_ore:1"
+      - "gold_block:1"
     commands:
       - "give {PLAYER} diamond_ore 40"
+    message: "&6Legendary reward! Congratulations!"
