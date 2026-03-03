@@ -1,18 +1,30 @@
 # Chance is 1-50, 50 = always, 1 = very rare
 rewards:
-  DiamondReward:
+  Uncommon:
+    chance: 10
+    items:
+      - "diamond_ore"
+      - "gold_block"
+    commands:
+      - "give {PLAYER} diamond_ore 40"
+  Common:
+    chance: 8
+    items:
+      - "diamond_ore"
+      - "gold_block"
+    commands:
+      - "give {PLAYER} diamond_ore 40"
+  Epic:
     chance: 5
     items:
-      - "minecraft:diamond:1"
+      - "diamond_ore"
+      - "gold_block"
     commands:
-      - "give {PLAYER} diamond 40"
-  KeyReward:
-    chance: 15
-    items: []
-    commands:
-      - "keyall"
-  GoldReward:
-    chance: 20
+      - "give {PLAYER} diamond_ore 40"
+  Legendary:
+    chance: 2
     items:
-      - "minecraft:gold_ingot:10"
-    commands: []
+      - "diamond_ore"
+      - "gold_block"
+    commands:
+      - "give {PLAYER} diamond_ore 40"
