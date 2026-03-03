@@ -1,0 +1,14 @@
+name: MiningRewards
+main: MiningRewards\Main
+version: 1.0.0
+api: 5.0.0
+author: zyberpe
+
+commands:
+  miningrewards:
+    description: Shows MiningRewards info
+    permission: miningrewards.command.info
+
+permissions:
+  miningrewards.command.info:
+    default: op
