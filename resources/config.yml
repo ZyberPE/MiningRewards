@@ -3,7 +3,7 @@ rewards:
   DiamondReward:
     chance: 5
     items:
-      - "264:1" # diamond
+      - "minecraft:diamond:1"
     commands:
       - "give {PLAYER} diamond 40"
   KeyReward:
@@ -14,5 +14,5 @@ rewards:
   GoldReward:
     chance: 20
     items:
-      - "266:10" # gold ingot
+      - "minecraft:gold_ingot:10"
     commands: []
