@@ -1,0 +1,18 @@
+# Chance is 1-50, 50 = always, 1 = very rare
+rewards:
+  DiamondReward:
+    chance: 5
+    items:
+      - "264:1" # diamond
+    commands:
+      - "give {PLAYER} diamond 40"
+  KeyReward:
+    chance: 15
+    items: []
+    commands:
+      - "keyall"
+  GoldReward:
+    chance: 20
+    items:
+      - "266:10" # gold ingot
+    commands: []
