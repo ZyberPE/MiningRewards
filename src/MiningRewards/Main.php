@@ -29,24 +29,34 @@ class Main extends PluginBase implements Listener {
         $messages = $this->config->get("messages", []);
 
         foreach($rewards as $rewardName => $data){
-            $chance = (int)($data["chance"] ?? 1);
-            if($chance < 1) $chance = 1;
-            if($chance > 1000) $chance = 1000;
 
-            $roll = mt_rand(1, 1000);
-            if($roll > $chance) continue; // not won
+            $chance = (int)($data["chance"] ?? 1);
+
+            // Clamp between 1 and 100000
+            if($chance < 1) $chance = 1;
+            if($chance > 100000) $chance = 100000;
+
+            // Roll between 1 and 100000
+            $roll = mt_rand(1, 100000);
+
+            if($roll > $chance) {
+                continue; // Player did not win this reward
+            }
 
             // --- GIVE ITEMS ---
             foreach($data["items"] ?? [] as $itemStr){
                 if(trim($itemStr) === "") continue;
 
-                $parts = explode(":", $itemStr) + [null, 1]; // [id, count]
+                $parts = explode(":", $itemStr) + [null, 1];
                 [$id, $count] = $parts;
                 $count = (int)$count;
 
                 $item = StringToItemParser::getInstance()->parse((string)$id);
+
                 if($item === null){
-                    $player->sendMessage(str_replace("{ITEM}", $id, $messages["invalid_item"] ?? "Invalid item: {ITEM}"));
+                    $msg = $messages["invalid_item"] ?? "&cInvalid item: {ITEM}";
+                    $msg = str_replace("{ITEM}", (string)$id, $msg);
+                    $player->sendMessage(TextFormat::colorize($msg));
                     $this->getLogger()->warning("Invalid item ID in MiningRewards config: $id");
                     continue;
                 }
@@ -58,18 +68,24 @@ class Main extends PluginBase implements Listener {
             // --- RUN COMMANDS AS CONSOLE ---
             foreach($data["commands"] ?? [] as $cmd){
                 if(trim($cmd) === "") continue;
+
                 $cmd = str_replace("{PLAYER}", $player->getName(), $cmd);
+
                 try {
-                    $this->getServer()->dispatchCommand($this->getServer()->getConsoleSender(), $cmd);
+                    $this->getServer()->dispatchCommand(
+                        $this->getServer()->getConsoleSender(),
+                        $cmd
+                    );
                 } catch (\Throwable $e){
                     $this->getLogger()->warning("Failed to run command: $cmd | ".$e->getMessage());
                 }
             }
 
-            // --- SEND REWARD MESSAGE ---
-            $rewardMessage = $data["message"] ?? $messages["reward_received"] ?? "You received reward: {REWARD}";
+            // --- SEND MESSAGE ---
+            $rewardMessage = $data["message"] ?? $messages["reward_received"] ?? "&aYou received reward: {REWARD}";
             $rewardMessage = str_replace("{REWARD}", $rewardName, $rewardMessage);
-            $player->sendMessage($rewardMessage);
+
+            $player->sendMessage(TextFormat::colorize($rewardMessage));
         }
     }
 }
