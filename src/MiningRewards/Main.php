@@ -19,6 +19,8 @@ class Main extends PluginBase implements Listener {
         $this->saveResource("config.yml");
         $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
+
+        $this->getLogger()->info(TextFormat::GREEN . "MiningRewards enabled!");
     }
 
     public function onBlockBreak(BlockBreakEvent $event): void {
@@ -26,26 +28,45 @@ class Main extends PluginBase implements Listener {
         $rewards = $this->config->get("rewards", []);
 
         foreach($rewards as $rewardName => $data){
-            $chance = (int)$data["chance"];
+
+            $chance = (int)($data["chance"] ?? 1);
+            if($chance < 1) $chance = 1;
+            if($chance > 50) $chance = 50;
+
             $roll = mt_rand(1, 50);
+            if($roll > $chance) continue; // not won
 
-            if($roll <= $chance){
-                // Give items
-                foreach($data["items"] ?? [] as $itemStr){
-                    [$id, $count] = explode(":", $itemStr);
-                    $item = StringToItemParser::getInstance()->parse($id);
-                    $item->setCount((int)$count);
-                    $player->getInventory()->addItem($item);
+            // --- GIVE ITEMS ---
+            foreach($data["items"] ?? [] as $itemStr){
+                if(trim($itemStr) === "") continue;
+
+                $parts = explode(":", $itemStr) + [null, 1]; // [id, count]
+                [$id, $count] = $parts;
+                $count = (int)$count;
+
+                $item = StringToItemParser::getInstance()->parse((string)$id);
+                if($item === null){
+                    $this->getLogger()->warning("Invalid item ID in MiningRewards config: $id");
+                    continue;
                 }
 
-                // Run commands as console
-                foreach($data["commands"] ?? [] as $cmd){
-                    $cmd = str_replace("{PLAYER}", $player->getName(), $cmd);
-                    $this->getServer()->dispatchCommand($this->getServer()->getConsoleSender(), $cmd);
-                }
-
-                $player->sendMessage(TextFormat::GREEN . "You received reward: " . $rewardName);
+                $item->setCount($count);
+                $player->getInventory()->addItem($item);
             }
+
+            // --- RUN COMMANDS AS CONSOLE ---
+            foreach($data["commands"] ?? [] as $cmd){
+                if(trim($cmd) === "") continue;
+
+                $cmd = str_replace("{PLAYER}", $player->getName(), $cmd);
+                try {
+                    $this->getServer()->dispatchCommand($this->getServer()->getConsoleSender(), $cmd);
+                } catch (\Throwable $e){
+                    $this->getLogger()->warning("Failed to run command: $cmd | ".$e->getMessage());
+                }
+            }
+
+            $player->sendMessage(TextFormat::GREEN . "You received reward: " . $rewardName);
         }
     }
 }
